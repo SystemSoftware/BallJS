@@ -9,12 +9,12 @@
             <hopcount>5</hopcount>
             <serviceId>
                <service>
-                  <serviceKey>Soap-Dings</serviceKey>
-                  <serviceValue>100</serviceValue>
+                  <key>Soap-Dings</key>
+                  <timestamp>100</timestamp>
                </service>
                <service>
-                  <serviceKey>JavaBeans</serviceKey>
-                  <serviceValue>120</serviceValue>
+                  <key>JavaBeans</key>
+                  <timestamp>120</timestamp>
                </service>
             </serviceId>
         </Response>
