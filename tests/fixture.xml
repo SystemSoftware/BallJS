@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap-env:Envelope
+    xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap-env:Header/>
+    <soap-env:Body>
+        <Response>
+            <id>Ball 1</id>
+            <holdtime>1</holdtime>
+            <hopcount>5</hopcount>
+            <serviceId>
+               <service>
+                  <key>Soap-Dings</key>
+                  <timestamp>100</timestamp>
+               </service>
+               <service>
+                  <key>JavaBeans</key>
+                  <timestamp>120</timestamp>
+               </service>
+            </serviceId>
+        </Response>
+    </soap-env:Body>
+</soap-env:Envelope>
