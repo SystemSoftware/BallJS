@@ -5,18 +5,18 @@
     <soap-env:Body>
         <Response>
             <id>Ball 1</id>
-            <holdtime>1</holdtime>
-            <hopcount>5</hopcount>
-            <serviceId>
+            <hold-time>1</hold-time>
+            <hop-count>5</hop-count>
+            <payload>
                <service>
                   <key>Soap-Dings</key>
-                  <timestamp>100</timestamp>
+                  <value>100</value>
                </service>
                <service>
                   <key>JavaBeans</key>
-                  <timestamp>120</timestamp>
+                  <value>120</value>
                </service>
-            </serviceId>
+            </payload>
         </Response>
     </soap-env:Body>
 </soap-env:Envelope>
