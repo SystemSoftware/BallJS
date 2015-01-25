@@ -54,7 +54,7 @@ suite('API', function() {
     test('new ball accepted. get it', function(done) {
         this.client.get('/', function(err, req, res, data) {
             assert.equal(res.statusCode, 200);
-            assert.equal(data, '{"Ball 1":{"id":"Ball 1","hold-time":1,"hop-count":6,"payload":{"Soap-Dings":100,"JavaBeans":120,"NodeJS":"hamhamham"}}}');
+            assert.deepEqual(JSON.parse(data), JSON.parse('{"id":"Ball 1","hold-time":1,"hop-count":6,"payload":{"Soap-Dings":100,"JavaBeans":120,"NodeJS":"hamhamham"}}'));
             done();
         });
     });  
@@ -65,6 +65,28 @@ suite('API', function() {
             done();
         });
     });
+
+   test('post two valid balls and get them', function(done){
+        this.client.post('/', {"ball" : JSON.stringify({"id": "Ball 1", "hold-time": 1, "hop-count": 5, "payload": {"Soap-Dings": 100, "JavaBeans": 120}})}, function(err, req, res, data) {
+            assert.equal(res.statusCode, 200);
+        });
+
+        this.client.post('/', {"ball" : JSON.stringify({"id": "Ball 2", "hold-time": 1, "hop-count": 5, "payload": {"Soap-Dings": 100, "JavaBeans": 120}})}, function(err, req, res, data) {
+            assert.equal(res.statusCode, 200);
+        });
+
+        this.client.get('/', function(err, req, res, data) {
+            assert.equal(res.statusCode, 200);
+            assert.deepEqual(JSON.parse(data), JSON.parse('{"id":"Ball 1","hold-time":1,"hop-count":6,"payload":{"Soap-Dings":100,"JavaBeans":120,"NodeJS":"hamhamham"}}'));
+        });
+
+        this.client.get('/', function(err, req, res, data) {
+            assert.equal(res.statusCode, 200);
+            assert.deepEqual(JSON.parse(data), JSON.parse('{"id":"Ball 2","hold-time":1,"hop-count":6,"payload":{"Soap-Dings":100,"JavaBeans":120,"NodeJS":"hamhamham"}}'));
+            done();
+        });
+
+      });
   
 });
 

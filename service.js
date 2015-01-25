@@ -2,8 +2,7 @@ var express = require('express')
 var bodyparser = require('body-parser')
 var app = express()
 
-balls = {}
-verfuegbar = {}
+balls = []
 var server
 
 //notwendig fuer das Parsen von POST-Daten
@@ -25,15 +24,14 @@ function createServer(port){
       console.log('NodeJs-Server is waiting for requests on port %s', port)
       app.get('/', function (request, response) {
          
-	      if (verfuegbar["Ball 1"] == false || verfuegbar["Ball 1"] == undefined){
+	      if (balls.length == 0){
 		      response.statusCode = 404
 	      }
 	      else{
-		      var output = JSON.stringify(balls)
+		      var output = JSON.stringify(balls.shift())
 		      response.set("Content-Type", "application/json; charset=utf-8")
 		      response.send(output)
 		      response.statusCode = 200
-		      verfuegbar["Ball 1"] = false
 	      }
          
 	      response.end()
@@ -50,12 +48,12 @@ function createServer(port){
 	      var name = post["id"]
 
          if (name != undefined){
-	         verfuegbar[name] = true
-            balls[name] = post
-            balls[name]["hop-count"]++
-            balls[name]["payload"]["NodeJS"] = "hamhamham"
-
-	         var output = JSON.stringify(balls[name])
+            var new_ball = post
+            new_ball["hop-count"]++
+            new_ball["payload"]["NodeJS"] = "hamhamham"
+            
+            balls.push(new_ball)
+	         var output = JSON.stringify(new_ball)
 	         response.set("Content-Type", "application/json; charset=utf-8")
 	         response.send(output)
 	         response.statusCode = 200;
