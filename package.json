@@ -1,0 +1,12 @@
+{
+   "name": "BallJS",
+   "description": "A little RESTful-WebService",
+   "author": "Manuel Eiden, Richard Kiefer, Christin Kreutz",
+   "dependencies": {
+      "express": "",
+      "mocha": "",
+      "body-parser": "",
+      "chai": "",
+      "restify": ""
+   }
+}
