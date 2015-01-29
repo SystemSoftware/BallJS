@@ -5,18 +5,19 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
     public function testConvertBall() {
         $soapball = $this->getSoapReponse("fixtures/ball.xml");
-        $jsonfixture = json_decode(file_get_contents("fixtures/ball.json"));
+        $fixture = json_decode(file_get_contents("fixtures/ball.json"));
         /** @todo Refactor and mock SoapClient class. */
-        $this->assertEquals($jsonfixture, convertBall($soapball->ball));
+        $this->assertEquals($fixture, convertBall($soapball->ball));
     }
  
     public function testUpdateBall()
     {
-        // $response = $this->getSoapReponse("fixtures/ball.xml");
-        // var_dump($response->ball->payload);
-        // $updatedBall = updateBall($response);
-        // $this->assertEquals($updatedBall->hop-count, $reponse->hop-count + 1);
-        
+        $soapball = $this->getSoapReponse("fixtures/ball.xml");
+        $fixture = json_decode(file_get_contents("fixtures/ball.json"));
+        $fixture->{'hop-count'} += 1;
+        $fixture->payload->{'cmr-php-soap-client'} = "12345678";
+        $ball = convertBall($soapball->ball);
+        $this->assertEquals($fixture, updateBall($ball, 12345678));        
     }
 
     

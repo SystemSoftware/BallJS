@@ -111,11 +111,11 @@ function convertBall($soapball) {
  *
  * @return The updated ball as json string.
  */
-function updateBall($ball) {
-    // ...
-    // ...
-    // ..
-    return $updatedBall;
+function updateBall($ball, $timestamp = NULL) {
+    $timestamp == NULL? microtime() : $timestamp;
+    $ball->{'hop-count'} += 1;
+    $ball->payload->{'cmr-php-soap-client'} = $timestamp;
+    return $ball;
 }
 
 // do {
