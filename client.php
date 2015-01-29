@@ -87,6 +87,45 @@ function xmlstringToArray($xmlstring) {
     return $arrayData;
 }
 
+
+function xmlstringToJSON($xmlstring) {
+    $array = xmlstringToArray($xmlstring);
+    return json_encode($array);
+}
+
+/**
+ * @return ball represented as object hiearchy.
+ */
+function convertBall($soapball) {
+    $ball = new stdClass();
+    $ball->id = $soapball->id;
+    $ball->{'hold-time'} = $soapball->{'hold-time'};
+    $ball->{'hop-count'} = $soapball->{'hop-count'};
+    $ball->payload = new stdClass();
+    foreach ($soapball->payload->service as $service) {
+        $ball->payload->{$service->key} = $service->value;
+    }
+    return $ball;
+}
+/**
+ *
+ * @return The updated ball as json string.
+ */
+function updateBall($ball) {
+    // ...
+    // ...
+    // ..
+    return $updatedBall;
+}
+
+// do {
+//     $soapball = $soapclient->getBall();
+//     $ball = convertBall($soapball);
+//     $updatedBall = updateBall($ball);
+//     $restclient->post($updatedBall);
+//     sleep($delay);
+// } while(true);
+
 // immer wieder soap-server pollen
 // wenn  ein ball zurueck kommt
 //    hop erhoehen
