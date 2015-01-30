@@ -8,9 +8,12 @@ var server
 //notwendig fuer das Parsen von POST-Daten
 app.use(bodyparser.urlencoded({}))
 
-function logIt(request, response){
-	date = new Date().toString()
-	console.log("%s - %s %s %s", date, request.method, response.statusCode, request.url)
+function logIt(request, response, details){
+    date = new Date().toString()
+    console.log("%s - %s %s %s", date, request.method, response.statusCode, request.url)
+    if(details!=""){
+        console.log(details)
+    }
 }
 
 function closeServer(){
@@ -24,46 +27,49 @@ function createServer(port){
       console.log('NodeJs-Server is waiting for requests on port %s', port)
       app.get('/', function (request, response) {
          
-	      if (balls.length == 0){
-		      response.statusCode = 404
-	      }
-	      else{
-		      var output = JSON.stringify(balls.shift())
-		      response.set("Content-Type", "application/json; charset=utf-8")
-		      response.send(output)
-		      response.statusCode = 200
-	      }
+          if (balls.length == 0){
+              response.statusCode = 404
+          }
+          else{
+              var output = JSON.stringify(balls.shift())
+              response.set("Content-Type", "application/json; charset=utf-8")
+              response.send(output)
+              response.statusCode = 200
+          }
          
-	      response.end()
-	      logIt(request, response)
+          response.end()
+          logIt(request, response, "")
       })
 
       app.post('/', function (request, response){
 
-         var post = {}
+         var post = {},
+             details = ""
          if (request.body["ball"] != undefined) {
             post = JSON.parse(request.body["ball"])
          }
 
-	      var name = post["id"]
+         var name = post["id"]
 
          if (name != undefined){
             var new_ball = post
+            details = 'New ball received: ' + JSON.stringify(new_ball)
             new_ball["hop-count"]++
-            new_ball["payload"]["NodeJS"] = "hamhamham"
+            new_ball["payload"]["NodeJS"] = "hamhamhamäßé文字"
             
             balls.push(new_ball)
-	         var output = JSON.stringify(new_ball)
-	         response.set("Content-Type", "application/json; charset=utf-8")
-	         response.send(output)
-	         response.statusCode = 200;
-	         response.end()
+            var output = JSON.stringify(new_ball)
+            response.set("Content-Type", "application/json; charset=utf-8")
+            response.send(output)
+            response.statusCode = 200;
+            response.end()
          }
          else{
+            details = "Invalid ball received."
             response.statusCode = 400
          }
          response.end()
-	      logIt(request, response)
+         logIt(request, response, details)
       })
    })
    return server
