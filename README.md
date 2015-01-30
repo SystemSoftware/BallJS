@@ -1,23 +1,38 @@
 # BallJS
 
-### Start Service
-In the root-directory of BallJS please type:
+
+## Usage
+To start server and client, use
 ```sh
-$ nodejs start_service.js
+make server & make client
 ```
 
-While developing it is very helpful to restart the server when files are changed. You can reach this with the following commands:
+To generate a new ball and send it to the (already running) server, use
+```sh
+make ball
+```
+
+### Requirements
+ * make
+ * php5-cli
+ * npm
+ * nodejs
+
+
+## Development
+
+```sh
+$ npm install
+```
+
+While developing it is very helpful to restart the server when files are changed. You can achieve this with the following commands:
 ```sh
 $ sudo npm install forever -g
 $ forever -w start_service.js
 ```
 
-### Installation (Debian/Ubuntu)
-First of all you have to install NodeJS with npm (Node Package Manager)
-```sh
-$ sudo apt-get install npm
-```
-Then you have to install all the Node-Packages we use in our project. In the root-directory of BallJS please type:
-```sh
-$ npm install
-```
+And also have a look at the Makefile within the ```tests```-directory.
+
+### Additional Requirements
+For development, in addition to the requirements for using BallJS, you will also need
+ * phpunit
