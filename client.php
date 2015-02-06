@@ -1,6 +1,6 @@
 <?php
 
-require('clientUtils.php');
+require('Ball.php');
 
 
 /** delay between server-pollings in microseconds
@@ -15,27 +15,16 @@ curl_setopt($curl_handler, CURLOPT_POST, 1);
 
 do {
     try{
-        $soapball = $soapclient->getBall();
-        $ball = convertBall($soapball);
-        
-        $time = time();
-        $ballId = $ball->id;
-        $lastHere = $time;
+        $soapresponse = $soapclient->getBall();
 
-        if (isset($ball->payload->{'cmr-php-soap-client'} )){
-            $lastHere = $ball->payload->{'cmr-php-soap-client'};
-        }
-        $roundTripTime = $time - $lastHere;
+        $ball = new Ball($soapresponse);        
+        $ball->greet();
+        sleep($ball->getHoldTime());
+        $ball->update();
 
-        print "Received ball $ballId; Roundtrip-time: $roundTripTime ms";
-        sleep($ball->{'hold-time'});
-        $updatedBall = updateBall($ball);
-
-        $post = array();
-        $post['ball'] = json_encode($updatedBall);
-        curl_setopt($curl_handler, CURLOPT_POSTFIELDS, $post);
-
-        $response = curl_exec($curl_handler);
+        curl_setopt($curl_handler, CURLOPT_POSTFIELDS,
+                    ['ball' => $ball->json()]);
+        curl_exec($curl_handler);
     }
     catch(Exception $e){
         print "No Ball available: $e";

@@ -3,22 +3,74 @@
 class ClientTest extends PHPUnit_Framework_TestCase
 {
 
-    public function testConvertBall() {
-        $soapball = $this->getSoapReponse("fixtures/ball.xml");
-        $fixture = json_decode(file_get_contents("fixtures/ball.json"));
-        /** @todo Refactor and mock SoapClient class. */
-        $this->assertEquals($fixture, convertBall($soapball->ball));
+    static function setUpBeforeClass() {
     }
- 
-    public function testUpdateBall()
-    {
-        $stamp = 12345678;
+
+
+    public function testInstantiation() {
         $soapball = $this->getSoapReponse("fixtures/ball.xml");
+        /** @todo Refactor and mock SoapClient class. */
+
+        $ball = new Ball($soapball);
+        $this->assertEquals('Ball 1', $ball->getId());
+        $this->assertEquals(1, $ball->getHoldTime());
+        $this->assertEquals(5, $ball->getHopCount());
+        $this->assertCount(2, get_object_vars($ball->getPayload()));
+        $this->assertEquals('100', $ball->getPayload()->{'Soap-Dings'});
+        $this->assertEquals('120', $ball->getPayload()->{'JavaBeans'});
+
+        return $ball;
+    }
+
+    /**
+     * @depends testInstantiation
+     */
+    public function testUpdate(Ball $ball)
+    {
+        $previousHops = $ball->getHopCount();
+        /** @todo mock php's built-in time functions somehow,
+         *        so we do not need to adapt the SUT for making it
+         *        testable anymore. 
+         *        cf. http://stackoverflow.com/q/2371854/1242922
+         */
+        $timestamp = 12345678;
+        $ball->update($timestamp);
+        $this->assertEquals($previousHops + 1, $ball->getHopCount());
+        $this->assertCount(3, get_object_vars($ball->getPayload()));
+        $this->assertEquals($timestamp, $ball->getPayload()->{'cmr-php-soap-client'});
+        /** @todo test that nothing else has changed. */
+
+        return $ball;
+    }
+
+    /**
+     * @depends testUpdate
+     */
+    public function testJson($ball) {
         $fixture = json_decode(file_get_contents("fixtures/ball.json"));
-        $fixture->{'hop-count'} += 1;
-        $fixture->payload->{'cmr-php-soap-client'} = $stamp;
-        $ball = convertBall($soapball->ball);
-        $this->assertEquals($fixture, updateBall($ball, $stamp));        
+        $jsonball = json_decode($ball->json());
+
+        /** @todo Make comparison with single-lined assertEquals($fiture, $jsonball).
+         *        Currently, each field is compared manually in order to
+         *        allow for implicit type conversions, i.e. '6' is equal to 6.
+         *        That is necessary since our mocked SoapResponse gives us strings
+         *        for every field.
+         */
+        $this->assertEquals($fixture->id, $jsonball->id);
+        $this->assertEquals($fixture->{'hop-count'}, $jsonball->{'hop-count'});
+        $this->assertEquals($fixture->{'hold-time'}, $jsonball->{'hold-time'});
+        $this->assertCount(count(get_object_vars($fixture->payload)),
+                           get_object_vars($jsonball->payload));
+
+        foreach (get_object_vars($fixture->payload) as $field => $value) {
+            $this->assertEquals($value,
+                                $jsonball->payload->{$field});
+        }
+    }
+
+    public function testGreet() {
+        // $this->expectOutputString()
+        // cf. https://phpunit.de/manual/current/en/writing-tests-for-phpunit.html#writing-tests-for-phpunit.test-dependencies
     }
 
     private function getSoapReponse($fixture) {
