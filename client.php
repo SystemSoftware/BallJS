@@ -30,8 +30,8 @@ do {
                     ['ball' => $ball->json()]);
         curl_exec($curl_handler);
     }
-    catch(Exception $e){
-        print "No Ball available: $e";
+    catch(SoapFault $sf){
+        print "Soap Fault: ". $sf->faultstring ."\n";
     }
     usleep(DELAY);
 } while(true);
