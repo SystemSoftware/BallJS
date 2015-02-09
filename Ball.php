@@ -29,7 +29,9 @@ class Ball {
     public function getPayload()  { return $this->ball->payload; }
 
     public function update($timestamp = NULL) {
-        $timestamp == NULL? microtime() : $timestamp;
+        if ($timestamp == NULL) {
+            $timestamp = microtime();
+        }
         $this->ball->{'hop-count'} += 1;
         $this->ball->payload[self::PAYLOAD_ID] = $timestamp;
     }
