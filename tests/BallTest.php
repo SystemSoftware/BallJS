@@ -65,6 +65,35 @@ class ClientTest extends PHPUnit_Framework_TestCase
         // cf. https://phpunit.de/manual/current/en/writing-tests-for-phpunit.html#writing-tests-for-phpunit.test-dependencies
     }
 
+    public function testPayloadWithMultipleEntries() {
+        /* Response-fixture, as would be returned by
+           calling the soap service's getBall() operation. */
+        $response = new stdClass();
+        $response->return = new stdClass();
+        $response->return->id = 'Ball with complex payload.';
+        $response->return->holdtime = 2;
+        $response->return->hopcount = 12;
+
+        $payload = new stdClass();
+        $payload->entry = [];
+        $payload->entry[0] = new stdClass();
+        $payload->entry[0]->key = 'foo';
+        $payload->entry[0]->value = 'bar';
+        $payload->entry[1] = new stdClass();
+        $payload->entry[1]->key = '23';
+        $payload->entry[1]->value = '42';
+        
+        $response->return->payload = $payload;
+
+
+        $ball = new Ball($response);
+        $this->assertCount(2, $ball->getPayload());
+        $this->assertEquals('bar', $ball->getPayload()['foo']);
+        $this->assertEquals('42', $ball->getPayload()['23']);
+
+        return $ball;
+    }
+
 }
 
 

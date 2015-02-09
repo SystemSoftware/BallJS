@@ -19,9 +19,23 @@ class Ball {
         $this->ball->{'hold-time'} = $soapball->holdtime;
         $this->ball->{'hop-count'} = $soapball->hopcount;
         $this->ball->payload = [];
-        $key = $soapball->payload->entry->key;
-        $value = $soapball->payload->entry->value;
-        $this->ball->payload[$key] = $value;
+        // the soap-ball's payload (to be more specific: payload->entry)
+        // might either be an array of items, or a single item if
+        // there is only one.
+        // It would be nicer if a single item was still wrapped in an
+        // array, but that's not how it was done, unfortunately.
+        if (is_array($soapball->payload->entry)) {
+            foreach ($soapball->payload->entry as $entry) {
+                $this->ball->payload[$entry->key] = $entry->value;
+            }
+        }
+        else {
+            $key = $soapball->payload->entry->key;
+            $value = $soapball->payload->entry->value;
+            $this->ball->payload[$key] = $value;
+        }
+        /** @todo what if there is no item in the payload? Don't know
+                  how such a soap-response would look like. */
     }
 
     public function getId()       { return $this->ball->id; }
