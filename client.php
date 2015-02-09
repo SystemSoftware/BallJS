@@ -1,46 +1,64 @@
 <?php
+require('Ball.php');
 
-require('clientUtils.php');
+handle_cl_options($argv);
 
-
-/** delay between server-pollings in microseconds
- */
-define('DELAY', 1* 1000 * 1000);
-define('WSDL_URL', $argv[0]);
-define('NODEJS_SERVICE_URL', $argv[1]);
-
-$soapclient = new SoapClient(WSDL_URL);
-$curl_handler = curl_init(NODEJS_SERVICE_URL);
-curl_setopt($curl_handler, CURLOPT_POST, 1);
+$soapClient = new SoapClient(WSDL_URL);
+$restClient = curl_init(NODEJS_SERVICE_URL);
+curl_setopt($restClient, CURLOPT_POST, true);
 
 do {
     try{
-        $soapball = $soapclient->getBall();
-        $ball = convertBall($soapball);
-        
-        $time = time();
-        $ballId = $ball->id;
-        $lastHere = $time;
+        $soapResponse = $soapClient->getBall();
 
-        if (isset($ball->payload->{'cmr-php-soap-client'} )){
-            $lastHere = $ball->payload->{'cmr-php-soap-client'};
-        }
-        $roundTripTime = $time - $lastHere;
+        $ball = new Ball($soapResponse);
+        $ball->greet();
+        sleep($ball->getHoldTime());
+        $ball->update();
 
-        print "Received ball $ballId; Roundtrip-time: $roundTripTime ms";
-        sleep($ball->{'hold-time'});
-        $updatedBall = updateBall($ball);
-
-        $post = array();
-        $post['ball'] = json_encode($updatedBall);
-        curl_setopt($curl_handler, CURLOPT_POSTFIELDS, $post);
-
-        $response = curl_exec($curl_handler);
+        /** @fixme providing postfields as an array did not work;
+                   maybe because curl uses then content-type: multipart. */
+        curl_setopt($restClient,
+                    CURLOPT_POSTFIELDS,
+                    'ball='. urlencode($ball->json()));
+        curl_exec($restClient);
     }
-    catch(Exception $e){
-        print "No Ball available: $e";
+    catch(SoapFault $sf){
+        print_soap_fault($sf);
     }
     usleep(DELAY);
 } while(true);
 
+
+
+function handle_cl_options($argv) {
+    if (count($argv) < 3) {
+        printf("Usage: php %s wsdl-url rest-url verbose?\n", $argv[0]);
+        print ("\n");
+        print ("If third argument is given, details about balls and\n");
+        print ("soap faults will be printed.\n");
+        exit(1);
+    }
+
+    /** delay between server-pollings in microseconds */
+    define('DELAY', 1* 1000 * 1000);
+    define('WSDL_URL', $argv[1]);
+    define('NODEJS_SERVICE_URL', $argv[2]);
+    if (count($argv) >= 4) {
+        define('VERBOSE', true);
+    }
+    else {
+        define('VERBOSE', false);
+    }
+    Ball::$verbose = VERBOSE;
+}
+
+function print_soap_fault($sf) {
+    if (VERBOSE) {
+        print "Soap Fault: ". $sf->faultstring ."\n";
+    }
+    else {
+        print ".";
+    }
+}
 ?>
