@@ -6,9 +6,9 @@ class Ball {
     const PAYLOAD_ID = 'cmr-php-soap-client';
 
 
-    /** ball represented as stdClass-object hiearchy.
+    /** ball represented as stdClass-object hierarchy.
      *  Keeps the data structure very similar to the soap-response,
-     *  @see __construct, and easyily jason-serializable, @see json.
+     *  @see __construct, and easily jason-serializable, @see json.
      */
     private $ball;
 
