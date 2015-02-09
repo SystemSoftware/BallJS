@@ -30,7 +30,8 @@ class Ball {
 
     public function update($timestamp = NULL) {
         if ($timestamp == NULL) {
-            $timestamp = microtime();
+            // return microtime as float.
+            $timestamp = microtime(true);
         }
         $this->ball->{'hop-count'} += 1;
         $this->ball->payload[self::PAYLOAD_ID] = $timestamp;
@@ -44,8 +45,8 @@ class Ball {
         print "Received ball ". $this->getId() . "\n";
         if (isset($this->getPayload()->{self::PAYLOAD_ID} )) {
             $lastHere = $this->payload->{'cmr-php-soap-client'};
-            $delta = microtime() - $lastHere;
-            print "  after ". $delta ." microseconds of absence.\n";
+            $delta = microtime(true) - $lastHere;
+            print "  after ". $delta ." seconds of absence.\n";
         }
         else {
             print "  and wee see it for the first time.\n";
