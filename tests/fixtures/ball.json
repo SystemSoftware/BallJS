@@ -1,1 +1,1 @@
-{"id": "Ball 1", "hold-time": 1, "hop-count": 6, "payload": {"Soap-Dings": 100, "JavaBeans": 120, "cmr-php-soap-client": 12345678}} 
+{"id": "Ball 1", "hold-time": 1, "hop-count": 6, "payload": {"foo": "bar", "cmr-php-soap-client": 12345678}} 

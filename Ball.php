@@ -12,15 +12,15 @@ class Ball {
     private $ball;
 
     function __construct($soapresponse) {
-        $soapball = $soapresponse->ball;
+        $soapball = $soapresponse->return;
         $this->ball = new stdClass();
         $this->ball->id = $soapball->id;
-        $this->ball->{'hold-time'} = $soapball->{'hold-time'};
-        $this->ball->{'hop-count'} = $soapball->{'hop-count'};
-        $this->ball->payload = new stdClass();
-        foreach ($soapball->payload->service as $service) {
-            $this->ball->payload->{$service->key} = $service->value;
-        }
+        $this->ball->{'hold-time'} = $soapball->holdtime;
+        $this->ball->{'hop-count'} = $soapball->hopcount;
+        $this->ball->payload = [];
+        $key = $soapball->payload->entry->key;
+        $value = $soapball->payload->entry->value;
+        $this->ball->payload[$key] = $value;
     }
 
     public function getId()       { return $this->ball->id; }
@@ -31,7 +31,7 @@ class Ball {
     public function update($timestamp = NULL) {
         $timestamp == NULL? microtime() : $timestamp;
         $this->ball->{'hop-count'} += 1;
-        $this->ball->payload->{self::PAYLOAD_ID} = $timestamp;
+        $this->ball->payload[self::PAYLOAD_ID] = $timestamp;
     }
 
     public function json() {
@@ -39,14 +39,14 @@ class Ball {
     }
 
     public function greet() {
-        print "Received ball ". $this->getId();
-        if (isset($ball->getPayload()->{self::PAYLOAD_ID} )) {
-            $lastHere = $ball->payload->{'cmr-php-soap-client'};
+        print "Received ball ". $this->getId() . "\n";
+        if (isset($this->getPayload()->{self::PAYLOAD_ID} )) {
+            $lastHere = $this->payload->{'cmr-php-soap-client'};
             $delta = microtime() - $lastHere;
-            print "  after ". $delta ." microseconds of absence.";
+            print "  after ". $delta ." microseconds of absence.\n";
         }
         else {
-            print "  and wee see it for the first time.";
+            print "  and wee see it for the first time.\n";
         }
     }
 
