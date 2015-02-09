@@ -3,24 +3,25 @@ require('Ball.php');
 
 handle_cl_options($argv);
 
-$soapclient = new SoapClient(WSDL_URL);
-$curl_handler = curl_init(NODEJS_SERVICE_URL);
-curl_setopt($curl_handler, CURLOPT_POST, 1);
+$soapClient = new SoapClient(WSDL_URL);
+$restClient = curl_init(NODEJS_SERVICE_URL);
+curl_setopt($restClient, CURLOPT_POST, true);
 
 do {
     try{
-        $soapresponse = $soapclient->getBall();
+        $soapResponse = $soapClient->getBall();
 
-        $ball = new Ball($soapresponse);
-
-        print "\n";        
+        $ball = new Ball($soapResponse);
         $ball->greet();
         sleep($ball->getHoldTime());
         $ball->update();
 
-        curl_setopt($curl_handler, CURLOPT_POSTFIELDS,
-                    ['ball' => $ball->json()]);
-        curl_exec($curl_handler);
+        /** @fixme providing postfields as an array did not work;
+                   maybe because curl uses then content-type: multipart. */
+        curl_setopt($restClient,
+                    CURLOPT_POSTFIELDS,
+                    'ball='. urlencode($ball->json()));
+        curl_exec($restClient);
     }
     catch(SoapFault $sf){
         print_soap_fault($sf);
@@ -34,8 +35,8 @@ function handle_cl_options($argv) {
     if (count($argv) < 3) {
         printf("Usage: php %s wsdl-url rest-url verbose?\n", $argv[0]);
         print ("\n");
-        print ("If third argument is given, details about soap faults\n");
-        print ("will be printed.\n");
+        print ("If third argument is given, details about balls and\n");
+        print ("soap faults will be printed.\n");
         exit(1);
     }
 
@@ -49,6 +50,7 @@ function handle_cl_options($argv) {
     else {
         define('VERBOSE', false);
     }
+    Ball::$verbose = VERBOSE;
 }
 
 function print_soap_fault($sf) {

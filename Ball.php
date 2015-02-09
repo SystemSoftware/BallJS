@@ -2,6 +2,7 @@
 
 
 class Ball {
+    public static $verbose = false;
     const PAYLOAD_ID = 'cmr-php-soap-client';
 
 
@@ -42,6 +43,7 @@ class Ball {
     }
 
     public function greet() {
+        print "\n";
         print "Received ball ". $this->getId() . "\n";
         if (isset($this->getPayload()->{self::PAYLOAD_ID} )) {
             $lastHere = $this->payload->{'cmr-php-soap-client'};
@@ -50,6 +52,9 @@ class Ball {
         }
         else {
             print "  and wee see it for the first time.\n";
+        }
+        if (self::$verbose) {
+            print "  ". $this->json() ."\n";
         }
     }
 
