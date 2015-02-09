@@ -44,14 +44,14 @@ class Ball {
 
     public function greet() {
         print "\n";
-        print "Received ball ". $this->getId() . "\n";
+        print "Hi, my name is ". $this->getId() . " and\n";
         if (isset($this->getPayload()->{self::PAYLOAD_ID} )) {
             $lastHere = $this->payload->{'cmr-php-soap-client'};
             $delta = microtime(true) - $lastHere;
-            print "  after ". $delta ." seconds of absence.\n";
+            print "  I'm back after ". $delta ." seconds of absence.\n";
         }
         else {
-            print "  and wee see it for the first time.\n";
+            print "  I'm here for the first time.\n";
         }
         if (self::$verbose) {
             print "  ". $this->json() ."\n";
