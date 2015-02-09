@@ -15,6 +15,7 @@ make ball
 ### Requirements
  * make
  * php5-cli
+ * install and enable curl for php (e.g. php5-curl)
  * npm
  * nodejs
 
